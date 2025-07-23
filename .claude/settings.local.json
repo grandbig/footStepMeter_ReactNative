@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)"
+    ],
+    "deny": [
+      "Read(.env*)",
+      "Read(*.env)",
+      "Read(secrets.json)",
+      "Read(*.key)",
+      "Read(*.pem)",
+      "Read(*.p12)",
+      "Read(*.keystore)",
+      "Read(google-services.json)",
+      "Read(GoogleService-Info.plist)",
+      "Read(**/*secret*)",
+      "Read(**/*credential*)",
+      "Read(**/*private*)"
+    ]
+  }
+}
