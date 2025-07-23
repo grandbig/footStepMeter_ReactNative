@@ -1,3 +1,5 @@
+import { VALIDATION_ERROR_CODES, LOCATION_ERROR_CODES, createValidationError, createLocationError } from './errors';
+
 /**
  * GPS location point interface
  */
@@ -56,16 +58,16 @@ export function calculateDistance(from: LocationPoint, to: LocationPoint): numbe
 export function calculateSpeed(distanceInMeters: number, timeInSeconds: number): number {
   // Input validation
   if (!isFinite(distanceInMeters) || isNaN(distanceInMeters)) {
-    throw new Error('Distance must be a valid finite number');
+    throw createValidationError(VALIDATION_ERROR_CODES.INVALID_VALUE, 'Distance must be a valid finite number', 'distanceInMeters');
   }
   if (!isFinite(timeInSeconds) || isNaN(timeInSeconds)) {
-    throw new Error('Time must be a valid finite number');
+    throw createValidationError(VALIDATION_ERROR_CODES.INVALID_VALUE, 'Time must be a valid finite number', 'timeInSeconds');
   }
   if (distanceInMeters < 0) {
-    throw new Error('Distance must be non-negative');
+    throw createValidationError(VALIDATION_ERROR_CODES.NEGATIVE_VALUE, 'Distance must be non-negative', 'distanceInMeters');
   }
   if (timeInSeconds <= 0) {
-    throw new Error('Time must be greater than 0');
+    throw createValidationError(VALIDATION_ERROR_CODES.ZERO_OR_NEGATIVE_VALUE, 'Time must be greater than 0', 'timeInSeconds');
   }
 
   // Convert meters/second to km/h with precision handling
@@ -90,7 +92,7 @@ export function calculateDirection(from: LocationPoint, to: LocationPoint): numb
 
   // Check for identical points (with floating-point tolerance)
   if (arePointsEqual(from, to)) {
-    throw new Error('Cannot calculate direction for identical points');
+    throw createLocationError(LOCATION_ERROR_CODES.IDENTICAL_POINTS, 'Cannot calculate direction for identical points');
   }
 
   const fromLatRad = toRadians(from.latitude);
@@ -121,23 +123,23 @@ export function calculateDirection(from: LocationPoint, to: LocationPoint): numb
  */
 export function validateLocationPoint(point: LocationPoint, paramName: string): void {
   if (!point || typeof point !== 'object') {
-    throw new Error(`${paramName} must be a valid LocationPoint object`);
+    throw createValidationError(VALIDATION_ERROR_CODES.INVALID_TYPE, `${paramName} must be a valid LocationPoint object`, paramName);
   }
   
   if (!isFinite(point.latitude) || isNaN(point.latitude)) {
-    throw new Error(`${paramName}.latitude must be a valid finite number`);
+    throw createValidationError(VALIDATION_ERROR_CODES.INVALID_VALUE, `${paramName}.latitude must be a valid finite number`, `${paramName}.latitude`);
   }
   
   if (!isFinite(point.longitude) || isNaN(point.longitude)) {
-    throw new Error(`${paramName}.longitude must be a valid finite number`);
+    throw createValidationError(VALIDATION_ERROR_CODES.INVALID_VALUE, `${paramName}.longitude must be a valid finite number`, `${paramName}.longitude`);
   }
   
   if (Math.abs(point.latitude) > 90) {
-    throw new Error('Invalid latitude');
+    throw createLocationError(LOCATION_ERROR_CODES.LATITUDE_OUT_OF_RANGE, 'Invalid latitude', `${paramName}.latitude`);
   }
   
   if (Math.abs(point.longitude) > 180) {
-    throw new Error('Invalid longitude');
+    throw createLocationError(LOCATION_ERROR_CODES.LONGITUDE_OUT_OF_RANGE, 'Invalid longitude', `${paramName}.longitude`);
   }
 }
 

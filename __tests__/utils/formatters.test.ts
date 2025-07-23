@@ -5,6 +5,7 @@ import {
   formatSpeed,
   Locale,
 } from '../../utils/formatters';
+import { ValidationError, FormatError, VALIDATION_ERROR_CODES, FORMAT_ERROR_CODES } from '../../utils/errors';
 
 describe('formatters', () => {
   describe('formatDateTime', () => {
@@ -24,22 +25,90 @@ describe('formatters', () => {
       expect(formatted).toBe('2023年12月25日 23:30');
     });
 
-    it('should throw error for null date', () => {
-      expect(() => formatDateTime(null as any)).toThrow('Invalid date provided');
-    });
-
-    it('should throw error for undefined date', () => {
-      expect(() => formatDateTime(undefined as any)).toThrow('Invalid date provided');
-    });
-
-    it('should throw error for non-Date object', () => {
-      expect(() => formatDateTime('invalid' as any)).toThrow('Invalid date provided');
-    });
-
-    it('should throw error for invalid Date object', () => {
-      const invalidDate = new Date('invalid');
+    it('should throw ValidationError with INVALID_TYPE for null date', () => {
+      let thrownError: any;
       
-      expect(() => formatDateTime(invalidDate)).toThrow('Invalid date provided');
+      try {
+        formatDateTime(null as any);
+      } catch (error) {
+        thrownError = error;
+      }
+      
+      expect(thrownError).toBeInstanceOf(ValidationError);
+      expect(thrownError.code).toBe(VALIDATION_ERROR_CODES.INVALID_TYPE);
+      expect(thrownError.field).toBe('date');
+    });
+
+    it('should throw ValidationError with INVALID_TYPE for undefined date', () => {
+      let thrownError: any;
+      
+      try {
+        formatDateTime(undefined as any);
+      } catch (error) {
+        thrownError = error;
+      }
+      
+      expect(thrownError).toBeInstanceOf(ValidationError);
+      expect(thrownError.code).toBe(VALIDATION_ERROR_CODES.INVALID_TYPE);
+      expect(thrownError.field).toBe('date');
+    });
+
+    it('should throw ValidationError with INVALID_TYPE for non-Date object', () => {
+      let thrownError: any;
+      
+      // Test string input
+      try {
+        formatDateTime('invalid' as any);
+      } catch (error) {
+        thrownError = error;
+      }
+      expect(thrownError).toBeInstanceOf(ValidationError);
+      expect(thrownError.code).toBe(VALIDATION_ERROR_CODES.INVALID_TYPE);
+      expect(thrownError.field).toBe('date');
+      
+      // Test number input
+      thrownError = undefined;
+      try {
+        formatDateTime(123 as any);
+      } catch (error) {
+        thrownError = error;
+      }
+      expect(thrownError).toBeInstanceOf(ValidationError);
+      
+      // Test object input
+      thrownError = undefined;
+      try {
+        formatDateTime({} as any);
+      } catch (error) {
+        thrownError = error;
+      }
+      expect(thrownError).toBeInstanceOf(ValidationError);
+    });
+
+    it('should throw FormatError with INVALID_DATE for invalid Date object', () => {
+      const invalidDate = new Date('invalid');
+      let thrownError: any;
+      
+      try {
+        formatDateTime(invalidDate);
+      } catch (error) {
+        thrownError = error;
+      }
+      
+      expect(thrownError).toBeInstanceOf(FormatError);
+      expect(thrownError.code).toBe(FORMAT_ERROR_CODES.INVALID_DATE);
+      expect(thrownError.field).toBe('date');
+    });
+
+    it('should fallback to en-US format for unsupported locale', () => {
+      const date = new Date('2023-12-25T14:30:45.123Z');
+      
+      // Type assertion to test unsupported locale fallback
+      // Using 'en-US' as the locale but with an invalid key to trigger fallback
+      const formatted = formatDateTime(date, 'invalid-locale' as any);
+      
+      // Should fallback to exactly the same format as en-US default
+      expect(formatted).toBe('Dec 25, 2023, 11:30 PM');
     });
   });
 
@@ -60,15 +129,42 @@ describe('formatters', () => {
       expect(formatted).toBe('1.5 km');
     });
 
-    it('should throw error for negative distance', () => {
+    it('should throw ValidationError with NEGATIVE_VALUE for negative distance', () => {
       const negativeDistance = -100;
+      let thrownError: any;
       
-      expect(() => formatDistance(negativeDistance)).toThrow('Distance must be non-negative');
+      try {
+        formatDistance(negativeDistance);
+      } catch (error) {
+        thrownError = error;
+      }
+      
+      expect(thrownError).toBeInstanceOf(ValidationError);
+      expect(thrownError.code).toBe(VALIDATION_ERROR_CODES.NEGATIVE_VALUE);
+      expect(thrownError.field).toBe('distanceInMeters');
     });
 
-    it('should throw error for invalid distance', () => {
-      expect(() => formatDistance(NaN)).toThrow('Distance must be a valid number');
-      expect(() => formatDistance(Infinity)).toThrow('Distance must be a valid number');
+    it('should throw ValidationError with INVALID_VALUE for invalid distance', () => {
+      let thrownError: any;
+      
+      // Test NaN
+      try {
+        formatDistance(NaN);
+      } catch (error) {
+        thrownError = error;
+      }
+      expect(thrownError).toBeInstanceOf(ValidationError);
+      expect(thrownError.code).toBe(VALIDATION_ERROR_CODES.INVALID_VALUE);
+      expect(thrownError.field).toBe('distanceInMeters');
+      
+      // Test Infinity
+      thrownError = undefined;
+      try {
+        formatDistance(Infinity);
+      } catch (error) {
+        thrownError = error;
+      }
+      expect(thrownError).toBeInstanceOf(ValidationError);
     });
   });
 
@@ -81,15 +177,42 @@ describe('formatters', () => {
       expect(formatted).toBe('12.5 km/h');
     });
 
-    it('should throw error for negative speed', () => {
+    it('should throw ValidationError with NEGATIVE_VALUE for negative speed', () => {
       const negativeSpeed = -10;
+      let thrownError: any;
       
-      expect(() => formatSpeed(negativeSpeed)).toThrow('Speed must be non-negative');
+      try {
+        formatSpeed(negativeSpeed);
+      } catch (error) {
+        thrownError = error;
+      }
+      
+      expect(thrownError).toBeInstanceOf(ValidationError);
+      expect(thrownError.code).toBe(VALIDATION_ERROR_CODES.NEGATIVE_VALUE);
+      expect(thrownError.field).toBe('speedInKmh');
     });
 
-    it('should throw error for invalid speed', () => {
-      expect(() => formatSpeed(NaN)).toThrow('Speed must be a valid number');
-      expect(() => formatSpeed(Infinity)).toThrow('Speed must be a valid number');
+    it('should throw ValidationError with INVALID_VALUE for invalid speed', () => {
+      let thrownError: any;
+      
+      // Test NaN
+      try {
+        formatSpeed(NaN);
+      } catch (error) {
+        thrownError = error;
+      }
+      expect(thrownError).toBeInstanceOf(ValidationError);
+      expect(thrownError.code).toBe(VALIDATION_ERROR_CODES.INVALID_VALUE);
+      expect(thrownError.field).toBe('speedInKmh');
+      
+      // Test Infinity
+      thrownError = undefined;
+      try {
+        formatSpeed(Infinity);
+      } catch (error) {
+        thrownError = error;
+      }
+      expect(thrownError).toBeInstanceOf(ValidationError);
     });
   });
 
@@ -174,15 +297,42 @@ describe('formatters', () => {
       expect(formatted).toBe('0秒');
     });
 
-    it('should throw error for negative duration', () => {
+    it('should throw ValidationError with NEGATIVE_VALUE for negative duration', () => {
       const negativeDuration = -60;
+      let thrownError: any;
       
-      expect(() => formatDuration(negativeDuration)).toThrow('Duration must be non-negative');
+      try {
+        formatDuration(negativeDuration);
+      } catch (error) {
+        thrownError = error;
+      }
+      
+      expect(thrownError).toBeInstanceOf(ValidationError);
+      expect(thrownError.code).toBe(VALIDATION_ERROR_CODES.NEGATIVE_VALUE);
+      expect(thrownError.field).toBe('durationInSeconds');
     });
 
-    it('should throw error for invalid duration', () => {
-      expect(() => formatDuration(NaN)).toThrow('Duration must be a valid number');
-      expect(() => formatDuration(Infinity)).toThrow('Duration must be a valid number');
+    it('should throw ValidationError with INVALID_VALUE for invalid duration', () => {
+      let thrownError: any;
+      
+      // Test NaN
+      try {
+        formatDuration(NaN);
+      } catch (error) {
+        thrownError = error;
+      }
+      expect(thrownError).toBeInstanceOf(ValidationError);
+      expect(thrownError.code).toBe(VALIDATION_ERROR_CODES.INVALID_VALUE);
+      expect(thrownError.field).toBe('durationInSeconds');
+      
+      // Test Infinity
+      thrownError = undefined;
+      try {
+        formatDuration(Infinity);
+      } catch (error) {
+        thrownError = error;
+      }
+      expect(thrownError).toBeInstanceOf(ValidationError);
     });
   });
 });

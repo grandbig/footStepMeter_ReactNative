@@ -1,3 +1,5 @@
+import { VALIDATION_ERROR_CODES, FORMAT_ERROR_CODES, createValidationError, createFormatError } from './errors';
+
 /**
  * Supported locales for formatting
  */
@@ -40,11 +42,11 @@ const DATE_FORMAT_OPTIONS: Record<SupportedLocale, Intl.DateTimeFormatOptions> =
 export function formatDateTime(date: Date, locale: SupportedLocale = Locale.EN_US): string {
   // Input validation
   if (!date || !(date instanceof Date)) {
-    throw new Error('Invalid date provided');
+    throw createValidationError(VALIDATION_ERROR_CODES.INVALID_TYPE, 'Invalid date provided', 'date');
   }
   
   if (isNaN(date.getTime())) {
-    throw new Error('Invalid date provided');
+    throw createFormatError(FORMAT_ERROR_CODES.INVALID_DATE, 'Invalid date provided', 'date');
   }
 
   // Custom formatting for Japanese locale to match expected format
@@ -80,11 +82,11 @@ const DISTANCE_UNITS: Record<SupportedLocale, { meter: string; kilometer: string
 export function formatDistance(distanceInMeters: number, locale: SupportedLocale = Locale.EN_US): string {
   // Input validation
   if (!isFinite(distanceInMeters) || isNaN(distanceInMeters)) {
-    throw new Error('Distance must be a valid number');
+    throw createValidationError(VALIDATION_ERROR_CODES.INVALID_VALUE, 'Distance must be a valid number', 'distanceInMeters');
   }
   
   if (distanceInMeters < 0) {
-    throw new Error('Distance must be non-negative');
+    throw createValidationError(VALIDATION_ERROR_CODES.NEGATIVE_VALUE, 'Distance must be non-negative', 'distanceInMeters');
   }
 
   const units = DISTANCE_UNITS[locale];
@@ -116,11 +118,11 @@ const SPEED_UNITS: Record<SupportedLocale, string> = {
 export function formatSpeed(speedInKmh: number, locale: SupportedLocale = Locale.EN_US): string {
   // Input validation
   if (!isFinite(speedInKmh) || isNaN(speedInKmh)) {
-    throw new Error('Speed must be a valid number');
+    throw createValidationError(VALIDATION_ERROR_CODES.INVALID_VALUE, 'Speed must be a valid number', 'speedInKmh');
   }
   
   if (speedInKmh < 0) {
-    throw new Error('Speed must be non-negative');
+    throw createValidationError(VALIDATION_ERROR_CODES.NEGATIVE_VALUE, 'Speed must be non-negative', 'speedInKmh');
   }
 
   const unit = SPEED_UNITS[locale];
@@ -147,11 +149,11 @@ const DURATION_UNITS: Record<SupportedLocale, { hour: string; minute: string; se
  */
 export function formatDuration(durationInSeconds: number, locale: SupportedLocale = Locale.EN_US): string {
   if (!isFinite(durationInSeconds) || isNaN(durationInSeconds)) {
-    throw new Error('Duration must be a valid number');
+    throw createValidationError(VALIDATION_ERROR_CODES.INVALID_VALUE, 'Duration must be a valid number', 'durationInSeconds');
   }
   
   if (durationInSeconds < 0) {
-    throw new Error('Duration must be non-negative');
+    throw createValidationError(VALIDATION_ERROR_CODES.NEGATIVE_VALUE, 'Duration must be non-negative', 'durationInSeconds');
   }
 
   if (durationInSeconds === 0) {
