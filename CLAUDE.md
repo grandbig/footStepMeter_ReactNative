@@ -133,6 +133,111 @@ The app supports automatic light/dark mode switching using:
 - Themed components use `useThemeColor` hook
 - Haptic feedback integrated in interactive elements
 
+## TDD Implementation Plan
+
+This project follows Test-Driven Development (TDD) principles with Red-Green-Refactor cycles. Focus on **Unit Tests** for business logic and pure functions.
+
+### Phase 1: Pure Functions (Strict TDD)
+```
+🔴 utils/calculations.ts Unit Tests
+  - Distance calculation between two GPS points (Haversine formula)
+  - Speed calculation (distance/time → km/h)
+  - Direction angle calculation
+🟢 Implement calculation logic
+🔄 Refactor for precision and error handling
+
+🔴 utils/formatters.ts Unit Tests
+  - Date/time display formatting
+  - Distance/speed unit conversion formatting
+🟢 Implement formatting functions
+🔄 Enhance internationalization support
+```
+
+### Phase 2: Type Definitions & Validation (TDD)
+```
+🔴 types/location.ts Validation Tests
+  - LocationPoint type validation
+  - GPS accuracy value range checks
+🟢 Implement type definitions and validation functions
+🔄 Optimize type design
+```
+
+### Phase 3: State Management (Unit TDD)
+```
+🔴 stores/trackingStore.ts Unit Tests
+  - Start/stop tracking state changes
+  - Location data addition to state
+  - Store calculation logic
+🟢 Implement Zustand tracking store
+🔄 Optimize state design
+
+🔴 stores/routeStore.ts Unit Tests
+  - Route data CRUD operations
+  - Route search and filtering logic
+🟢 Implement route management store
+🔄 Improve data structure
+```
+
+### Phase 4: Service Layer (Interface + Mock)
+```
+🔴 services/locationService.ts Unit Tests
+  - GPS settings change logic
+  - Location data transformation
+  - Error handling (mock Expo APIs)
+🟢 Implement location service
+🔄 Improve accuracy and performance
+
+🔴 services/routeService.ts Unit Tests
+  - Route data operation business logic
+  - Data consistency checks
+🟢 Implement route management service
+🔄 Optimize data operations
+```
+
+### Phase 5: Custom Hooks (Unit TDD)
+```
+🔴 hooks/useLocationTracking.ts Unit Tests
+  - Hook internal state management
+  - Hook calculation processing
+🟢 Implement location tracking hook
+🔄 Improve hook design
+
+🔴 hooks/useRouteManagement.ts Unit Tests
+  - Route operation logic
+  - Hook data transformation
+🟢 Implement route management hook
+🔄 Enhance reusability
+```
+
+### Phase 6: UI Components (Unit TDD)
+```
+🔴 components/tracking/* Unit Tests
+  - Display logic based on props
+  - Component calculation processing
+  - Event handler testing
+🟢 Implement GPS tracking UI
+🔄 Improve component design
+
+🔴 components/route/* Unit Tests
+  - Data display logic
+  - Component internal state management
+🟢 Implement route display UI
+🔄 Enhance reusability
+```
+
+### TDD Implementation Principles
+1. **Pure functions first** - Apply strict TDD to pure functions
+2. **Mock external dependencies** - Enable Unit Testing with mocks
+3. **Focus on business logic** - Write tests for core functionality
+4. **One feature, one test** - Maintain Red-Green-Refactor granularity
+5. **Continuous refactoring** - Improve design during refactor phase
+
+### Non-TDD Areas (Separate Implementation)
+- **Expo API integration** - expo-location, expo-sqlite actual behavior
+- **Screen navigation** - Expo Router functionality verification
+- **Device-specific features** - GPS, background processing
+- **Performance testing** - Real device behavior confirmation
+
 ## Configuration
 - **ESLint** - Uses expo/flat config with strict TypeScript
 - **Metro** - Web bundler with static output
