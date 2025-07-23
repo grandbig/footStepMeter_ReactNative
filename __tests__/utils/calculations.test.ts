@@ -5,6 +5,7 @@ import {
   validateLocationPoint,
   arePointsEqual,
 } from '../../utils/calculations';
+import { ValidationError, LocationError, VALIDATION_ERROR_CODES, LOCATION_ERROR_CODES } from '../../utils/errors';
 
 describe('calculations', () => {
   describe('calculateDistance', () => {
@@ -28,18 +29,36 @@ describe('calculations', () => {
     });
 
 
-    it('should throw error for invalid first argument', () => {
+    it('should throw LocationError with LATITUDE_OUT_OF_RANGE for invalid first argument', () => {
       const validPoint = { latitude: 35.6812, longitude: 139.7671 };
       const invalidPoint = { latitude: 91, longitude: 139.7671 };
+      let thrownError: any;
       
-      expect(() => calculateDistance(invalidPoint, validPoint)).toThrow('Invalid latitude');
+      try {
+        calculateDistance(invalidPoint, validPoint);
+      } catch (error) {
+        thrownError = error;
+      }
+      
+      expect(thrownError).toBeInstanceOf(LocationError);
+      expect(thrownError.code).toBe(LOCATION_ERROR_CODES.LATITUDE_OUT_OF_RANGE);
+      expect(thrownError.field).toBe('from.latitude');
     });
 
-    it('should throw error for invalid second argument', () => {
+    it('should throw LocationError with LONGITUDE_OUT_OF_RANGE for invalid second argument', () => {
       const validPoint = { latitude: 35.6812, longitude: 139.7671 };
       const invalidPoint = { latitude: 35.6812, longitude: 181 };
+      let thrownError: any;
       
-      expect(() => calculateDistance(validPoint, invalidPoint)).toThrow('Invalid longitude');
+      try {
+        calculateDistance(validPoint, invalidPoint);
+      } catch (error) {
+        thrownError = error;
+      }
+      
+      expect(thrownError).toBeInstanceOf(LocationError);
+      expect(thrownError.code).toBe(LOCATION_ERROR_CODES.LONGITUDE_OUT_OF_RANGE);
+      expect(thrownError.field).toBe('to.longitude');
     });
   });
 
@@ -53,58 +72,135 @@ describe('calculations', () => {
       expect(speed).toBe(6); // 6 km/h
     });
 
-    it('should throw error for invalid distance (NaN/Infinity)', () => {
-      expect(() => calculateSpeed(NaN, 600))
-        .toThrow('Distance must be a valid finite number');
+    it('should throw ValidationError with INVALID_VALUE for invalid distance (NaN/Infinity)', () => {
+      let thrownError: any;
       
-      expect(() => calculateSpeed(Infinity, 600))
-        .toThrow('Distance must be a valid finite number');
+      // Test NaN
+      try {
+        calculateSpeed(NaN, 600);
+      } catch (error) {
+        thrownError = error;
+      }
+      expect(thrownError).toBeInstanceOf(ValidationError);
+      expect(thrownError.code).toBe(VALIDATION_ERROR_CODES.INVALID_VALUE);
+      expect(thrownError.field).toBe('distanceInMeters');
+      
+      // Test Infinity
+      thrownError = undefined;
+      try {
+        calculateSpeed(Infinity, 600);
+      } catch (error) {
+        thrownError = error;
+      }
+      expect(thrownError).toBeInstanceOf(ValidationError);
     });
 
-    it('should throw error for invalid time (NaN/Infinity)', () => {
-      expect(() => calculateSpeed(1000, NaN))
-        .toThrow('Time must be a valid finite number');
+    it('should throw ValidationError with INVALID_VALUE for invalid time (NaN/Infinity)', () => {
+      let thrownError: any;
       
-      expect(() => calculateSpeed(1000, Infinity))
-        .toThrow('Time must be a valid finite number');
+      // Test NaN
+      try {
+        calculateSpeed(1000, NaN);
+      } catch (error) {
+        thrownError = error;
+      }
+      expect(thrownError).toBeInstanceOf(ValidationError);
+      expect(thrownError.code).toBe(VALIDATION_ERROR_CODES.INVALID_VALUE);
+      expect(thrownError.field).toBe('timeInSeconds');
+      
+      // Test Infinity
+      thrownError = undefined;
+      try {
+        calculateSpeed(1000, Infinity);
+      } catch (error) {
+        thrownError = error;
+      }
+      expect(thrownError).toBeInstanceOf(ValidationError);
     });
 
-    it('should throw error for negative distance', () => {
-      expect(() => calculateSpeed(-1000, 600))
-        .toThrow('Distance must be non-negative');
+    it('should throw ValidationError with NEGATIVE_VALUE for negative distance', () => {
+      let thrownError: any;
+      
+      try {
+        calculateSpeed(-1000, 600);
+      } catch (error) {
+        thrownError = error;
+      }
+      
+      expect(thrownError).toBeInstanceOf(ValidationError);
+      expect(thrownError.code).toBe(VALIDATION_ERROR_CODES.NEGATIVE_VALUE);
+      expect(thrownError.field).toBe('distanceInMeters');
     });
 
-    it('should throw error for zero or negative time', () => {
-      expect(() => calculateSpeed(1000, 0))
-        .toThrow('Time must be greater than 0');
+    it('should throw ValidationError with ZERO_OR_NEGATIVE_VALUE for zero or negative time', () => {
+      let thrownError: any;
       
-      expect(() => calculateSpeed(1000, -600))
-        .toThrow('Time must be greater than 0');
+      // Test zero
+      try {
+        calculateSpeed(1000, 0);
+      } catch (error) {
+        thrownError = error;
+      }
+      expect(thrownError).toBeInstanceOf(ValidationError);
+      expect(thrownError.code).toBe(VALIDATION_ERROR_CODES.ZERO_OR_NEGATIVE_VALUE);
+      expect(thrownError.field).toBe('timeInSeconds');
+      
+      // Test negative
+      thrownError = undefined;
+      try {
+        calculateSpeed(1000, -600);
+      } catch (error) {
+        thrownError = error;
+      }
+      expect(thrownError).toBeInstanceOf(ValidationError);
     });
   });
 
   describe('calculateDirection', () => {
-    it('should throw error for invalid from argument', () => {
+    it('should throw LocationError with LATITUDE_OUT_OF_RANGE for invalid from argument', () => {
       const validPoint = { latitude: 35.6812, longitude: 139.7671 };
       const invalidPoint = { latitude: 91, longitude: 139.7671 };
+      let thrownError: any;
       
-      expect(() => calculateDirection(invalidPoint, validPoint))
-        .toThrow('Invalid latitude');
+      try {
+        calculateDirection(invalidPoint, validPoint);
+      } catch (error) {
+        thrownError = error;
+      }
+      
+      expect(thrownError).toBeInstanceOf(LocationError);
+      expect(thrownError.code).toBe(LOCATION_ERROR_CODES.LATITUDE_OUT_OF_RANGE);
+      expect(thrownError.field).toBe('from.latitude');
     });
 
-    it('should throw error for invalid to argument', () => {
+    it('should throw LocationError with LONGITUDE_OUT_OF_RANGE for invalid to argument', () => {
       const validPoint = { latitude: 35.6812, longitude: 139.7671 };
       const invalidPoint = { latitude: 35.6812, longitude: 181 };
+      let thrownError: any;
       
-      expect(() => calculateDirection(validPoint, invalidPoint))
-        .toThrow('Invalid longitude');
+      try {
+        calculateDirection(validPoint, invalidPoint);
+      } catch (error) {
+        thrownError = error;
+      }
+      
+      expect(thrownError).toBeInstanceOf(LocationError);
+      expect(thrownError.code).toBe(LOCATION_ERROR_CODES.LONGITUDE_OUT_OF_RANGE);
+      expect(thrownError.field).toBe('to.longitude');
     });
 
-    it('should throw error for identical points', () => {
+    it('should throw LocationError with IDENTICAL_POINTS for identical points', () => {
       const point = { latitude: 35.6812, longitude: 139.7671 };
+      let thrownError: any;
       
-      expect(() => calculateDirection(point, point))
-        .toThrow('Cannot calculate direction for identical points');
+      try {
+        calculateDirection(point, point);
+      } catch (error) {
+        thrownError = error;
+      }
+      
+      expect(thrownError).toBeInstanceOf(LocationError);
+      expect(thrownError.code).toBe(LOCATION_ERROR_CODES.IDENTICAL_POINTS);
     });
 
     it('should calculate bearing from starting point to destination', () => {
@@ -120,61 +216,141 @@ describe('calculations', () => {
   });
 
   describe('validateLocationPoint', () => {
-    it('should throw error for null or undefined point', () => {
-      expect(() => validateLocationPoint(null as any, 'testPoint'))
-        .toThrow('testPoint must be a valid LocationPoint object');
+    it('should throw ValidationError with INVALID_TYPE for null or undefined point', () => {
+      let thrownError: any;
       
-      expect(() => validateLocationPoint(undefined as any, 'testPoint'))
-        .toThrow('testPoint must be a valid LocationPoint object');
+      // Test null
+      try {
+        validateLocationPoint(null as any, 'testPoint');
+      } catch (error) {
+        thrownError = error;
+      }
+      expect(thrownError).toBeInstanceOf(ValidationError);
+      expect(thrownError.code).toBe(VALIDATION_ERROR_CODES.INVALID_TYPE);
+      expect(thrownError.field).toBe('testPoint');
+      
+      // Test undefined
+      thrownError = undefined;
+      try {
+        validateLocationPoint(undefined as any, 'testPoint');
+      } catch (error) {
+        thrownError = error;
+      }
+      expect(thrownError).toBeInstanceOf(ValidationError);
     });
 
-    it('should throw error for non-object point', () => {
-      expect(() => validateLocationPoint('invalid' as any, 'testPoint'))
-        .toThrow('testPoint must be a valid LocationPoint object');
+    it('should throw ValidationError with INVALID_TYPE for non-object point', () => {
+      let thrownError: any;
+      
+      try {
+        validateLocationPoint('invalid' as any, 'testPoint');
+      } catch (error) {
+        thrownError = error;
+      }
+      
+      expect(thrownError).toBeInstanceOf(ValidationError);
+      expect(thrownError.code).toBe(VALIDATION_ERROR_CODES.INVALID_TYPE);
+      expect(thrownError.field).toBe('testPoint');
     });
 
-    it('should throw error for NaN coordinates', () => {
+    it('should throw ValidationError with INVALID_VALUE for NaN coordinates', () => {
       const nanLatPoint = { latitude: NaN, longitude: 139.7671 };
       const nanLonPoint = { latitude: 35.6812, longitude: NaN };
+      let thrownError: any;
       
-      expect(() => validateLocationPoint(nanLatPoint, 'testPoint'))
-        .toThrow('testPoint.latitude must be a valid finite number');
+      // Test NaN latitude
+      try {
+        validateLocationPoint(nanLatPoint, 'testPoint');
+      } catch (error) {
+        thrownError = error;
+      }
+      expect(thrownError).toBeInstanceOf(ValidationError);
+      expect(thrownError.code).toBe(VALIDATION_ERROR_CODES.INVALID_VALUE);
+      expect(thrownError.field).toBe('testPoint.latitude');
       
-      expect(() => validateLocationPoint(nanLonPoint, 'testPoint'))
-        .toThrow('testPoint.longitude must be a valid finite number');
+      // Test NaN longitude
+      thrownError = undefined;
+      try {
+        validateLocationPoint(nanLonPoint, 'testPoint');
+      } catch (error) {
+        thrownError = error;
+      }
+      expect(thrownError).toBeInstanceOf(ValidationError);
     });
 
-    it('should throw error for infinite coordinates', () => {
+    it('should throw ValidationError with INVALID_VALUE for infinite coordinates', () => {
       const infLatPoint = { latitude: Infinity, longitude: 139.7671 };
       const infLonPoint = { latitude: 35.6812, longitude: -Infinity };
+      let thrownError: any;
       
-      expect(() => validateLocationPoint(infLatPoint, 'testPoint'))
-        .toThrow('testPoint.latitude must be a valid finite number');
+      // Test Infinity latitude
+      try {
+        validateLocationPoint(infLatPoint, 'testPoint');
+      } catch (error) {
+        thrownError = error;
+      }
+      expect(thrownError).toBeInstanceOf(ValidationError);
+      expect(thrownError.code).toBe(VALIDATION_ERROR_CODES.INVALID_VALUE);
+      expect(thrownError.field).toBe('testPoint.latitude');
       
-      expect(() => validateLocationPoint(infLonPoint, 'testPoint'))
-        .toThrow('testPoint.longitude must be a valid finite number');
+      // Test -Infinity longitude
+      thrownError = undefined;
+      try {
+        validateLocationPoint(infLonPoint, 'testPoint');
+      } catch (error) {
+        thrownError = error;
+      }
+      expect(thrownError).toBeInstanceOf(ValidationError);
     });
 
-    it('should throw error for out-of-range latitude', () => {
+    it('should throw LocationError with LATITUDE_OUT_OF_RANGE for out-of-range latitude', () => {
       const highLatPoint = { latitude: 91, longitude: 139.7671 };
       const lowLatPoint = { latitude: -91, longitude: 139.7671 };
+      let thrownError: any;
       
-      expect(() => validateLocationPoint(highLatPoint, 'testPoint'))
-        .toThrow('Invalid latitude');
+      // Test high latitude
+      try {
+        validateLocationPoint(highLatPoint, 'testPoint');
+      } catch (error) {
+        thrownError = error;
+      }
+      expect(thrownError).toBeInstanceOf(LocationError);
+      expect(thrownError.code).toBe(LOCATION_ERROR_CODES.LATITUDE_OUT_OF_RANGE);
+      expect(thrownError.field).toBe('testPoint.latitude');
       
-      expect(() => validateLocationPoint(lowLatPoint, 'testPoint'))
-        .toThrow('Invalid latitude');
+      // Test low latitude
+      thrownError = undefined;
+      try {
+        validateLocationPoint(lowLatPoint, 'testPoint');
+      } catch (error) {
+        thrownError = error;
+      }
+      expect(thrownError).toBeInstanceOf(LocationError);
     });
 
-    it('should throw error for out-of-range longitude', () => {
+    it('should throw LocationError with LONGITUDE_OUT_OF_RANGE for out-of-range longitude', () => {
       const highLonPoint = { latitude: 35.6812, longitude: 181 };
       const lowLonPoint = { latitude: 35.6812, longitude: -181 };
+      let thrownError: any;
       
-      expect(() => validateLocationPoint(highLonPoint, 'testPoint'))
-        .toThrow('Invalid longitude');
+      // Test high longitude
+      try {
+        validateLocationPoint(highLonPoint, 'testPoint');
+      } catch (error) {
+        thrownError = error;
+      }
+      expect(thrownError).toBeInstanceOf(LocationError);
+      expect(thrownError.code).toBe(LOCATION_ERROR_CODES.LONGITUDE_OUT_OF_RANGE);
+      expect(thrownError.field).toBe('testPoint.longitude');
       
-      expect(() => validateLocationPoint(lowLonPoint, 'testPoint'))
-        .toThrow('Invalid longitude');
+      // Test low longitude
+      thrownError = undefined;
+      try {
+        validateLocationPoint(lowLonPoint, 'testPoint');
+      } catch (error) {
+        thrownError = error;
+      }
+      expect(thrownError).toBeInstanceOf(LocationError);
     });
 
     it('should accept edge case coordinates', () => {
