@@ -25,6 +25,8 @@ The project uses a layered architecture with clean separation of concerns, desig
 - `npm run ios` - Start with iOS simulator  
 - `npm run web` - Start web version
 - `npm run lint` - Run ESLint checks
+- `npm test` - Run unit tests
+- `npm run test:coverage` - Run unit tests with coverage report
 - `npm run reset-project` - Reset to blank project (moves current code to app-example/)
 
 ## Architecture
@@ -231,6 +233,42 @@ This project follows Test-Driven Development (TDD) principles with Red-Green-Ref
 3. **Focus on business logic** - Write tests for core functionality
 4. **One feature, one test** - Maintain Red-Green-Refactor granularity
 5. **Continuous refactoring** - Improve design during refactor phase
+
+### Unit Testing Guidelines
+
+#### Test Scope and Focus
+1. **Test Your Own Logic Only**:
+   - Focus on testing business logic and custom functions you implement
+   - Do not test OSS modules (Jest, Expo APIs, React Native components)
+   - Mock external dependencies rather than testing their internal behavior
+   - Example: Test `calculateDistance()` logic, but not `Math.sin()` function
+
+2. **Coverage-Driven Testing**:
+   - Aim for high code coverage while maintaining test quality
+   - Use `npm run test:coverage` to monitor coverage metrics
+   - Target coverage guidelines: Statements (80%+), Branches (80%+), Functions (80%+)
+   - 100% coverage is ideal but not mandatory - prioritize meaningful tests
+
+3. **Avoid Redundant Tests**:
+   - Don't write tests that don't improve coverage metrics
+   - Remove duplicate test scenarios that test the same code paths
+   - Focus on unique branches, edge cases, and error conditions
+   - Example: If boundary value tests cover normal cases, skip redundant normal value tests
+
+#### Test Quality Standards
+- **Precise Assertions**: Use `toBe()` for fixed inputs rather than `toBeCloseTo()`
+- **Complete Truth Tables**: Test all logical combinations (AND/OR operations)
+- **Error Path Coverage**: Test all validation and error handling branches
+- **Clear Test Names**: Describe what specific behavior is being verified
+
+#### Coverage Analysis
+```bash
+# Generate detailed coverage report
+npm run test:coverage
+
+# View HTML report (detailed line-by-line coverage)
+open coverage/index.html
+```
 
 ### Non-TDD Areas (Separate Implementation)
 - **Expo API integration** - expo-location, expo-sqlite actual behavior
