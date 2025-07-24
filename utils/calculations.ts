@@ -1,9 +1,10 @@
 import { VALIDATION_ERROR_CODES, LOCATION_ERROR_CODES, createValidationError, createLocationError } from './errors';
+import { isValidLatitude, isValidLongitude } from './coordinates';
 
 /**
- * GPS location point interface
+ * Geographic coordinate point interface for calculations
  */
-export interface LocationPoint {
+export interface GeographicPoint {
   latitude: number;
   longitude: number;
 }
@@ -15,10 +16,10 @@ export interface LocationPoint {
  * @returns Distance in meters
  * @throws {Error} When coordinates are invalid or NaN
  */
-export function calculateDistance(from: LocationPoint, to: LocationPoint): number {
+export function calculateDistance(from: GeographicPoint, to: GeographicPoint): number {
   // Input validation
-  validateLocationPoint(from, 'from');
-  validateLocationPoint(to, 'to');
+  validateGeographicPoint(from, 'from');
+  validateGeographicPoint(to, 'to');
 
   // Return 0 for identical points (with floating-point precision tolerance)
   if (arePointsEqual(from, to)) {
@@ -85,10 +86,10 @@ export function calculateSpeed(distanceInMeters: number, timeInSeconds: number):
  * @returns Bearing in degrees (0-360)
  * @throws {Error} When coordinates are invalid or points are identical
  */
-export function calculateDirection(from: LocationPoint, to: LocationPoint): number {
+export function calculateDirection(from: GeographicPoint, to: GeographicPoint): number {
   // Input validation
-  validateLocationPoint(from, 'from');
-  validateLocationPoint(to, 'to');
+  validateGeographicPoint(from, 'from');
+  validateGeographicPoint(to, 'to');
 
   // Check for identical points (with floating-point tolerance)
   if (arePointsEqual(from, to)) {
@@ -121,9 +122,9 @@ export function calculateDirection(from: LocationPoint, to: LocationPoint): numb
  * @param paramName Parameter name for error messages
  * @throws {Error} When coordinates are invalid or NaN
  */
-export function validateLocationPoint(point: LocationPoint, paramName: string): void {
+export function validateGeographicPoint(point: GeographicPoint, paramName: string): void {
   if (!point || typeof point !== 'object') {
-    throw createValidationError(VALIDATION_ERROR_CODES.INVALID_TYPE, `${paramName} must be a valid LocationPoint object`, paramName);
+    throw createValidationError(VALIDATION_ERROR_CODES.INVALID_TYPE, `${paramName} must be a valid GeographicPoint object`, paramName);
   }
   
   if (!isFinite(point.latitude) || isNaN(point.latitude)) {
@@ -134,11 +135,11 @@ export function validateLocationPoint(point: LocationPoint, paramName: string): 
     throw createValidationError(VALIDATION_ERROR_CODES.INVALID_VALUE, `${paramName}.longitude must be a valid finite number`, `${paramName}.longitude`);
   }
   
-  if (Math.abs(point.latitude) > 90) {
+  if (!isValidLatitude(point.latitude)) {
     throw createLocationError(LOCATION_ERROR_CODES.LATITUDE_OUT_OF_RANGE, 'Invalid latitude', `${paramName}.latitude`);
   }
   
-  if (Math.abs(point.longitude) > 180) {
+  if (!isValidLongitude(point.longitude)) {
     throw createLocationError(LOCATION_ERROR_CODES.LONGITUDE_OUT_OF_RANGE, 'Invalid longitude', `${paramName}.longitude`);
   }
 }
@@ -149,7 +150,7 @@ export function validateLocationPoint(point: LocationPoint, paramName: string): 
  * @param to Second point
  * @returns True if points are approximately equal
  */
-export function arePointsEqual(from: LocationPoint, to: LocationPoint): boolean {
+export function arePointsEqual(from: GeographicPoint, to: GeographicPoint): boolean {
   const EPSILON = 1e-10; // Very small tolerance for floating-point comparison
   return Math.abs(from.latitude - to.latitude) < EPSILON &&
          Math.abs(from.longitude - to.longitude) < EPSILON;
