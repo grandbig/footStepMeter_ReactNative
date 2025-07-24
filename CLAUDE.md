@@ -255,6 +255,13 @@ This project follows Test-Driven Development (TDD) principles with Red-Green-Ref
    - Focus on unique branches, edge cases, and error conditions
    - Example: If boundary value tests cover normal cases, skip redundant normal value tests
 
+4. **Do Not Test Constants**:
+   - Constants (simple value assignments) do not require unit tests
+   - Testing constants adds no value and clutters the test suite
+   - Instead, test functions that use the constants to verify correct behavior
+   - Keep constants private (no `export`) if only used within the module
+   - Example: Don't test `const MAX_VALUE = 100`, but test `isValid(100)` returns `true`
+
 #### Test Quality Standards
 - **Precise Assertions**: Use `toBe()` for fixed inputs rather than `toBeCloseTo()`
 - **Complete Truth Tables**: Test all logical combinations (AND/OR operations)

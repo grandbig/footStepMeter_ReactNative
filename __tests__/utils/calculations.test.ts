@@ -2,7 +2,7 @@ import {
   calculateDistance,
   calculateSpeed,
   calculateDirection,
-  validateLocationPoint,
+  validateGeographicPoint,
   arePointsEqual,
 } from '../../utils/calculations';
 import { ValidationError, LocationError, VALIDATION_ERROR_CODES, LOCATION_ERROR_CODES } from '../../utils/errors';
@@ -215,13 +215,13 @@ describe('calculations', () => {
     });
   });
 
-  describe('validateLocationPoint', () => {
+  describe('validateGeographicPoint', () => {
     it('should throw ValidationError with INVALID_TYPE for null or undefined point', () => {
       let thrownError: any;
       
       // Test null
       try {
-        validateLocationPoint(null as any, 'testPoint');
+        validateGeographicPoint(null as any, 'testPoint');
       } catch (error) {
         thrownError = error;
       }
@@ -232,7 +232,7 @@ describe('calculations', () => {
       // Test undefined
       thrownError = undefined;
       try {
-        validateLocationPoint(undefined as any, 'testPoint');
+        validateGeographicPoint(undefined as any, 'testPoint');
       } catch (error) {
         thrownError = error;
       }
@@ -243,7 +243,7 @@ describe('calculations', () => {
       let thrownError: any;
       
       try {
-        validateLocationPoint('invalid' as any, 'testPoint');
+        validateGeographicPoint('invalid' as any, 'testPoint');
       } catch (error) {
         thrownError = error;
       }
@@ -260,7 +260,7 @@ describe('calculations', () => {
       
       // Test NaN latitude
       try {
-        validateLocationPoint(nanLatPoint, 'testPoint');
+        validateGeographicPoint(nanLatPoint, 'testPoint');
       } catch (error) {
         thrownError = error;
       }
@@ -271,7 +271,7 @@ describe('calculations', () => {
       // Test NaN longitude
       thrownError = undefined;
       try {
-        validateLocationPoint(nanLonPoint, 'testPoint');
+        validateGeographicPoint(nanLonPoint, 'testPoint');
       } catch (error) {
         thrownError = error;
       }
@@ -285,7 +285,7 @@ describe('calculations', () => {
       
       // Test Infinity latitude
       try {
-        validateLocationPoint(infLatPoint, 'testPoint');
+        validateGeographicPoint(infLatPoint, 'testPoint');
       } catch (error) {
         thrownError = error;
       }
@@ -296,7 +296,7 @@ describe('calculations', () => {
       // Test -Infinity longitude
       thrownError = undefined;
       try {
-        validateLocationPoint(infLonPoint, 'testPoint');
+        validateGeographicPoint(infLonPoint, 'testPoint');
       } catch (error) {
         thrownError = error;
       }
@@ -310,7 +310,7 @@ describe('calculations', () => {
       
       // Test high latitude
       try {
-        validateLocationPoint(highLatPoint, 'testPoint');
+        validateGeographicPoint(highLatPoint, 'testPoint');
       } catch (error) {
         thrownError = error;
       }
@@ -321,7 +321,7 @@ describe('calculations', () => {
       // Test low latitude
       thrownError = undefined;
       try {
-        validateLocationPoint(lowLatPoint, 'testPoint');
+        validateGeographicPoint(lowLatPoint, 'testPoint');
       } catch (error) {
         thrownError = error;
       }
@@ -335,7 +335,7 @@ describe('calculations', () => {
       
       // Test high longitude
       try {
-        validateLocationPoint(highLonPoint, 'testPoint');
+        validateGeographicPoint(highLonPoint, 'testPoint');
       } catch (error) {
         thrownError = error;
       }
@@ -346,7 +346,7 @@ describe('calculations', () => {
       // Test low longitude
       thrownError = undefined;
       try {
-        validateLocationPoint(lowLonPoint, 'testPoint');
+        validateGeographicPoint(lowLonPoint, 'testPoint');
       } catch (error) {
         thrownError = error;
       }
@@ -359,10 +359,10 @@ describe('calculations', () => {
       const dateLine = { latitude: 0, longitude: 180 };
       const antiMeridian = { latitude: 0, longitude: -180 };
       
-      expect(() => validateLocationPoint(northPole, 'northPole')).not.toThrow();
-      expect(() => validateLocationPoint(southPole, 'southPole')).not.toThrow();
-      expect(() => validateLocationPoint(dateLine, 'dateLine')).not.toThrow();
-      expect(() => validateLocationPoint(antiMeridian, 'antiMeridian')).not.toThrow();
+      expect(() => validateGeographicPoint(northPole, 'northPole')).not.toThrow();
+      expect(() => validateGeographicPoint(southPole, 'southPole')).not.toThrow();
+      expect(() => validateGeographicPoint(dateLine, 'dateLine')).not.toThrow();
+      expect(() => validateGeographicPoint(antiMeridian, 'antiMeridian')).not.toThrow();
     });
   });
 
