@@ -2,6 +2,9 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Communication Language
+**IMPORTANT**: All terminal responses and task explanations should be in **Japanese** for this Japanese project. Use natural, professional Japanese when communicating with the user. Only code comments and documentation may remain in English for international compatibility.
+
 ## Project Overview
 
 This is a React Native port of the original Swift iOS app [footStepMeter](https://github.com/grandbig/footStepMeter). The goal is to recreate the walking route tracking functionality using Expo Router and make it available cross-platform.
@@ -137,28 +140,28 @@ The app supports automatic light/dark mode switching using:
 
 ## TDD Implementation Plan
 
-This project follows Test-Driven Development (TDD) principles with Red-Green-Refactor cycles. Focus on **Unit Tests** for business logic and pure functions.
+This project follows Test-Driven Development (TDD) principles with Red-Green-Refactor cycles. Focus on **Unit Tests** for business logic and pure functions. This implementation faithfully recreates the original Swift iOS app functionality without additional features.
 
 ### Phase 1: Pure Functions (Strict TDD)
 ```
-🔴 utils/calculations.ts Unit Tests
-  - Distance calculation between two GPS points (Haversine formula)
-  - Speed calculation (distance/time → km/h)
-  - Direction angle calculation
-🟢 Implement calculation logic
-🔄 Refactor for precision and error handling
-
 🔴 utils/formatters.ts Unit Tests
   - Date/time display formatting
-  - Distance/speed unit conversion formatting
+  - GPS coordinate display formatting
+  - Accuracy/speed unit formatting
 🟢 Implement formatting functions
 🔄 Enhance internationalization support
+
+🔴 utils/coordinates.ts Unit Tests
+  - GPS coordinate validation
+  - Coordinate range checks (-90≤lat≤90, -180≤lng≤180)
+🟢 Implement coordinate validation logic
+🔄 Optimize validation performance
 ```
 
 ### Phase 2: Type Definitions & Validation (TDD)
 ```
-🔴 types/location.ts Validation Tests
-  - LocationPoint type validation
+🔴 types/location.ts Validation Tests  
+  - LocationPoint type validation (latitude, longitude, accuracy, speed, direction, timestamp)
   - GPS accuracy value range checks
 🟢 Implement type definitions and validation functions
 🔄 Optimize type design
@@ -166,16 +169,18 @@ This project follows Test-Driven Development (TDD) principles with Red-Green-Ref
 
 ### Phase 3: State Management (Unit TDD)
 ```
-🔴 stores/trackingStore.ts Unit Tests
-  - Start/stop tracking state changes
-  - Location data addition to state
-  - Store calculation logic
-🟢 Implement Zustand tracking store
+🔴 stores/footprintStore.ts Unit Tests
+  - Start/stop location collection state changes
+  - GPS footprint data addition to state
+  - Location count tracking
+  - Current location state management
+🟢 Implement Zustand footprint collection store
 🔄 Optimize state design
 
 🔴 stores/routeStore.ts Unit Tests
-  - Route data CRUD operations
+  - Route (footprint collection) CRUD operations
   - Route search and filtering logic
+  - Route deletion operations
 🟢 Implement route management store
 🔄 Improve data structure
 ```
@@ -183,47 +188,51 @@ This project follows Test-Driven Development (TDD) principles with Red-Green-Ref
 ### Phase 4: Service Layer (Interface + Mock)
 ```
 🔴 services/locationService.ts Unit Tests
-  - GPS settings change logic
-  - Location data transformation
-  - Error handling (mock Expo APIs)
+  - GPS accuracy settings change logic
+  - Location data collection and transformation
+  - Error handling (mock expo-location APIs)
 🟢 Implement location service
 🔄 Improve accuracy and performance
 
-🔴 services/routeService.ts Unit Tests
-  - Route data operation business logic
-  - Data consistency checks
-🟢 Implement route management service
+🔴 services/storageService.ts Unit Tests
+  - Footprint data persistence operations
+  - SQLite data operations
+  - Data export functionality for email sharing
+🟢 Implement storage service
 🔄 Optimize data operations
 ```
 
 ### Phase 5: Custom Hooks (Unit TDD)
 ```
-🔴 hooks/useLocationTracking.ts Unit Tests
-  - Hook internal state management
-  - Hook calculation processing
-🟢 Implement location tracking hook
+🔴 hooks/useLocationCollection.ts Unit Tests
+  - Hook location collection state management
+  - GPS authorization handling
+  - Location accuracy control
+🟢 Implement location collection hook
 🔄 Improve hook design
 
-🔴 hooks/useRouteManagement.ts Unit Tests
-  - Route operation logic
-  - Hook data transformation
-🟢 Implement route management hook
+🔴 hooks/useFootprintManagement.ts Unit Tests
+  - Footprint data operations
+  - Route management logic
+  - Data transformation hooks
+🟢 Implement footprint management hook
 🔄 Enhance reusability
 ```
 
 ### Phase 6: UI Components (Unit TDD)
 ```
-🔴 components/tracking/* Unit Tests
-  - Display logic based on props
-  - Component calculation processing
-  - Event handler testing
-🟢 Implement GPS tracking UI
+🔴 components/location/* Unit Tests
+  - Location display components
+  - GPS status indicators
+  - Accuracy level selectors
+🟢 Implement GPS location UI
 🔄 Improve component design
 
-🔴 components/route/* Unit Tests
-  - Data display logic
-  - Component internal state management
-🟢 Implement route display UI
+🔴 components/footprint/* Unit Tests
+  - Footprint list display
+  - Route history components
+  - Export functionality UI
+🟢 Implement footprint display UI
 🔄 Enhance reusability
 ```
 
