@@ -178,11 +178,13 @@ This project follows Test-Driven Development (TDD) principles with Red-Green-Ref
 🔄 Optimize state design
 
 🔴 stores/routeStore.ts Unit Tests
-  - Route (footprint collection) CRUD operations
-  - Route search and filtering logic
-  - Route deletion operations
-🟢 Implement route management store
-🔄 Improve data structure
+  - Route addition (createFootprint equivalent)
+  - Get all routes (fetchFootprints equivalent) 
+  - Get routes by title (fetchFootprintsByTitle equivalent)
+  - Delete routes by title (delete equivalent)
+  - Get route count (countFootprints equivalent)
+🟢 Implement route management store (original features only)
+🔄 Optimize data structure for original functionality
 ```
 
 ### Phase 4: Service Layer (Interface + Mock)
