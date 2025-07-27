@@ -247,6 +247,36 @@ This project follows Test-Driven Development (TDD) principles with Red-Green-Ref
 🔄 Enhance reusability
 ```
 
+### Phase 7: Expo API Integration & Real Device Testing (Post-TDD)
+```
+📦 Install Required Expo Modules
+  - expo-location - GPS and location services
+  - expo-sqlite - Local database operations  
+  - expo-file-system - File operations for data export
+  - expo-mail-composer - Email sharing functionality
+  - expo-task-manager - Background location tracking
+  - i18n-js + expo-localization - Multi-language support
+
+🔧 Replace Mock Dependencies with Real APIs
+  - Update locationService.ts to use actual expo-location
+  - Update storageService.ts to use actual expo-sqlite
+  - Update exportService.ts to use actual expo-file-system + expo-mail-composer
+  - Verify all existing unit tests still pass with real implementations
+
+📱 Device Integration Testing
+  - Test GPS accuracy on real devices (iOS/Android)
+  - Verify background location tracking functionality
+  - Test SQLite database performance with large datasets
+  - Verify email export functionality across platforms
+  - Test app behavior with location services disabled/denied
+
+🚀 Performance Optimization
+  - Profile SQLite query performance with real data
+  - Optimize location tracking for battery usage
+  - Verify memory usage with large route datasets
+  - Test app startup time with database operations
+```
+
 ### TDD Implementation Principles
 1. **Pure functions first** - Apply strict TDD to pure functions
 2. **Mock external dependencies** - Enable Unit Testing with mocks
@@ -297,11 +327,10 @@ npm run test:coverage
 open coverage/index.html
 ```
 
-### Non-TDD Areas (Separate Implementation)
-- **Expo API integration** - expo-location, expo-sqlite actual behavior
+### Non-TDD Areas (Manual Verification)
 - **Screen navigation** - Expo Router functionality verification
-- **Device-specific features** - GPS, background processing
-- **Performance testing** - Real device behavior confirmation
+- **Device-specific features** - Platform-specific behavior testing
+- **Performance testing** - Real device performance confirmation
 
 ## Configuration
 - **ESLint** - Uses expo/flat config with strict TypeScript
