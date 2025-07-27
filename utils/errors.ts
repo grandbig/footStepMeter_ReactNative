@@ -25,6 +25,19 @@ export const LOCATION_ERROR_CODES = {
   INVALID_GPS_ACCURACY: 'LOCATION.INVALID_GPS_ACCURACY',
 } as const;
 
+/**
+ * Location service specific error codes
+ */
+export const LOCATION_SERVICE_ERROR_CODES = {
+  PERMISSION_DENIED: 'LOCATION_SERVICE.PERMISSION_DENIED',
+  LOCATION_UNAVAILABLE: 'LOCATION_SERVICE.LOCATION_UNAVAILABLE',
+  BACKGROUND_PERMISSION_DENIED: 'LOCATION_SERVICE.BACKGROUND_PERMISSION_DENIED',
+  SERVICE_UNAVAILABLE: 'LOCATION_SERVICE.SERVICE_UNAVAILABLE',
+  CONFIGURATION_ERROR: 'LOCATION_SERVICE.CONFIGURATION_ERROR',
+} as const;
+
+export type LocationServiceErrorCode = typeof LOCATION_SERVICE_ERROR_CODES[keyof typeof LOCATION_SERVICE_ERROR_CODES];
+
 export type LocationErrorCode = typeof LOCATION_ERROR_CODES[keyof typeof LOCATION_ERROR_CODES];
 
 /**
@@ -121,6 +134,21 @@ export class CalculationError extends BaseError {
 }
 
 /**
+ * Location service error for GPS service scenarios
+ */
+export class LocationServiceError extends BaseError {
+  public readonly code: LocationServiceErrorCode;
+  public readonly originalError?: Error;
+
+  constructor(code: LocationServiceErrorCode, message: string, originalError?: Error, field?: string) {
+    super(message, field);
+    this.name = 'LocationServiceError';
+    this.code = code;
+    this.originalError = originalError;
+  }
+}
+
+/**
  * Helper functions to create domain-specific errors
  */
 export function createValidationError(
@@ -153,4 +181,13 @@ export function createCalculationError(
   field?: string
 ): CalculationError {
   return new CalculationError(code, message, field);
+}
+
+export function createLocationServiceError(
+  code: LocationServiceErrorCode,
+  message: string,
+  originalError?: Error,
+  field?: string
+): LocationServiceError {
+  return new LocationServiceError(code, message, originalError, field);
 }
