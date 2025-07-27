@@ -4,9 +4,10 @@ import { LOCATION_ERROR_CODES, LocationError } from '../utils/errors';
 /**
  * GPS accuracy constants for type-safe usage
  * Single source of truth for all GPS accuracy values
- * Based on LocationAccuracy enum from expo-location
+ * Based on original app's LocationAccuracy enum (6 levels)
  */
 export const GPS_ACCURACY = {
+  BEST_FOR_NAVIGATION: 'best-for-navigation',
   BEST: 'best',
   NEAREST_TEN_METERS: 'nearest-ten-meters',
   HUNDRED_METERS: 'hundred-meters',

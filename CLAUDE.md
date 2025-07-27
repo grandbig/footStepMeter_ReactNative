@@ -190,18 +190,27 @@ This project follows Test-Driven Development (TDD) principles with Red-Green-Ref
 ### Phase 4: Service Layer (Interface + Mock)
 ```
 🔴 services/locationService.ts Unit Tests
-  - GPS accuracy settings change logic
-  - Location data collection and transformation
+  - GPS accuracy settings (6 levels: bestForNavigation, best, nearestTenMeters, hundredMeters, kilometer, threeKilometers)
+  - Background location tracking configuration
+  - Location data transformation and validation
   - Error handling (mock expo-location APIs)
-🟢 Implement location service
+🟢 Implement location service (original features only)
 🔄 Improve accuracy and performance
 
 🔴 services/storageService.ts Unit Tests
-  - Footprint data persistence operations
-  - SQLite data operations
-  - Data export functionality for email sharing
-🟢 Implement storage service
+  - Footprint data CRUD operations (createFootprint, fetchFootprints, fetchFootprintsByTitle, delete, countFootprints)
+  - SQLite database operations (equivalent to original Realm functionality)
+  - Data aggregation and title-based organization
+🟢 Implement storage service (original features only)
 🔄 Optimize data operations
+
+🔴 services/exportService.ts Unit Tests
+  - CSV data generation from footprint array (makeCSVData equivalent)
+  - Email composition with CSV attachment (sendMailWithCSV equivalent)
+  - File encoding and MIME type handling
+  - Error handling for mail service unavailability
+🟢 Implement data export service (original features only)
+🔄 Optimize CSV generation and file handling
 ```
 
 ### Phase 5: Custom Hooks (Unit TDD)
