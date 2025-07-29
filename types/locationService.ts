@@ -1,5 +1,5 @@
-import { LocationPoint, GPSAccuracy } from './location';
 import { LocationServiceError } from '../utils/errors';
+import { GPSAccuracy, LocationPoint } from './location';
 
 /**
  * Location service configuration interface

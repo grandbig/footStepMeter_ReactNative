@@ -146,10 +146,10 @@ export class LocationService {
 
   /**
    * Request location permissions
-   * @param config Configuration containing permission requirements
+   * @param enableBackground Whether to request background location permissions
    * @returns Permission status for foreground and background
    */
-  public async requestPermissions(config: LocationServiceConfig): Promise<{
+  public async requestPermissions(enableBackground: boolean): Promise<{
     foreground: LocationPermissionStatus;
     background?: LocationPermissionStatus;
   }> {
@@ -164,7 +164,7 @@ export class LocationService {
       } = { foreground: foregroundStatus };
 
       // Request background permissions if needed
-      if (config.enableBackground && foregroundStatus === LocationPermissionStatus.GRANTED) {
+      if (enableBackground && foregroundStatus === LocationPermissionStatus.GRANTED) {
         const backgroundPermission = await this.locationAPI.requestBackgroundPermissionsAsync();
         result.background = this.mapPermissionStatus(backgroundPermission.status);
       }
@@ -366,7 +366,7 @@ export class LocationService {
       }
 
       // Request permissions
-      const permissions = await this.requestPermissions(config);
+      const permissions = await this.requestPermissions(config.enableBackground);
       if (permissions.foreground !== LocationPermissionStatus.GRANTED) {
         this.setStatus(LocationServiceStatus.ERROR);
         return;
